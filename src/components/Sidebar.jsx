@@ -1,34 +1,40 @@
-import { PlusIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
+import { BiMessageSquare } from 'react-icons/bi';
+import { useState } from 'react';
 
-export default function Sidebar({ show, chatHistory, onNewChat, onSelectChat, currentChatId }) {
-  if (!show) return null;
-
+const Sidebar = ({ onNewChat, onLogin, history }) => {
   return (
-    <div className="w-64 bg-[#9F60B9] p-4 text-white">
-      <button
-        onClick={onNewChat}
-        className="mb-6 flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-white hover:bg-white/10"
-      >
-        <PlusIcon className="h-5 w-5" />
-        New Chat
-      </button>
-      
-      <div className="space-y-2">
-        {chatHistory.map((chat) => (
-          <button
-            key={chat.id}
-            onClick={() => onSelectChat(chat.id)}
-            className={`flex w-full items-center gap-2 rounded-lg p-3 text-left transition-colors ${
-              currentChatId === chat.id
-                ? 'bg-white/20'
-                : 'hover:bg-white/10'
-            }`}
+    <div className="w-80 bg-[#9F60B9] text-white fixed h-screen">
+      <div className="p-6 flex flex-col justify-between h-full">
+        <div>
+          <div className="flex items-center mb-8">
+            <BiMessageSquare className="text-3xl" />
+            {/* <h2 className="text-xl font-semibold ml-3">No Rules Rules</h2> */}
+          </div>
+          
+          <button 
+            onClick={onNewChat} 
+            className="bg-white text-[#9F60B9] px-4 py-2 rounded mb-4 hover:bg-gray-200 transition-colors"
           >
-            <ChatBubbleLeftIcon className="h-5 w-5" />
-            <span className="truncate">{chat.title}</span>
+            New Chat
           </button>
-        ))}
+
+          <div className="border-t border-white/20 pt-4">
+            {/* {history.map((item, index) => (
+              <div key={index} className="py-2 hover:bg-white/10 cursor-pointer rounded px-2 transition-colors">
+                {item}
+              </div>
+            ))} */}
+          </div>
+        </div>
+        <button 
+          onClick={onLogin} 
+          className="bg-white text-[#9F60B9] px-4 py-2 rounded hover:bg-gray-200 transition-colors"
+        >
+          Login
+        </button>
       </div>
     </div>
   );
 }
+
+export default Sidebar;

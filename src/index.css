@@ -12,6 +12,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+<<<<<<< Updated upstream
 }
 
 @keyframes audioWave {
@@ -21,4 +22,6 @@ body {
   50% {
     transform: scaleY(1);
   }
+=======
+>>>>>>> Stashed changes
 }
