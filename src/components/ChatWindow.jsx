@@ -43,7 +43,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
         },
       });
       console.log("File uploaded successfully:", response.data);
-      // formData.current.delete("file"); // Clear the formData after successful upload
+      // formData.current.delete("file"); 
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -117,6 +117,17 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
       setIsRecording(false);
     }
   };
+
+  // API to get audio file
+  // const response = await axios.post("http://localhost:3000/get-audio", audioFormData, {
+  //   headers: {
+  //     "Content-Type": "multipart/form-data",
+  //   },
+  // });
+  // const audioBlob = response.data.audio;
+  // const audioUrl = URL.createObjectURL(audioBlob);
+  // const audio = new Audio(audioUrl);
+  // audio.play();
 
   const handleNewChat = () => {
     setHistory([]);
