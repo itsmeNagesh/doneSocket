@@ -5,6 +5,7 @@ import AudioWaveButton from "./AudioWaveButton";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import Speech from 'speak-tts';
+import Hood from './Hood';
 
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
@@ -158,25 +159,32 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
         </header>
 
         {!showAIPopup ? (
-          <main className="flex-1 flex flex-col items-center justify-center p-4">
-            <div className="text-center space-y-8">
-              <div>
-                <p className="text-lg mb-4">Upload your files here</p>
-                <label className="bg-gray-200 text-gray-800 px-8 py-4 rounded cursor-pointer hover:bg-gray-300 transition-colors inline-block text-lg">
-                  {uploadedFileName || "Upload"}
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                </label>
-              </div>
-            </div>
-            <div className="absolute bottom-8">
-              <AudioWaveButton onClick={handleAudioWaveButtonClick} />
-            </div>
-          </main>
+          <main className="flex items-center justify-center h-fit overflow-hidden relative">
+          <div className="text-center space-y-8">
+            <Hood />
+          </div>
+          <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
+    <h5 className="text-center font-bold text-[#6E1EA3] text-3xl">
+      What can <br /> I <br />help you with?
+    </h5>
+  </div>
+          <div className="absolute bottom-16 w-full flex justify-center space-x-4">
+            <label className="bg-gray-200 text-gray-800 px-8 py-4 rounded cursor-pointer hover:bg-gray-300 transition-colors inline-block text-lg">
+    {uploadedFileName || "Upload"}
+    <input
+      type="file"
+      accept=".pdf"
+      className="hidden"
+      onChange={handleFileUpload}
+    />
+  </label>
+
+  <div>
+    <AudioWaveButton onClick={handleAudioWaveButtonClick} />
+  </div>
+</div>
+        </main>
+        
         ) : (
           <AIPopup 
             onClose={() => setShowAIPopup(false)} 
