@@ -145,14 +145,13 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     <div className="flex h-screen bg-gray-100">
       {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} />}
       <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
-        <header className="bg-white p-4 shadow-sm flex justify-between items-center">
+        <header className="bg-[#1E1F22] h-[80px] p-4 shadow-sm flex justify-between items-center">
           <div className="flex items-center">
-            <button className="flex items-center text-gray-600 hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
+            <button className="flex items-center text-white hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
               <BiMenu className="text-xl" />
             </button>
-            <h1 className="text-xl font-bold ml-4">APEXIQ</h1>
           </div>
-          <button className="flex items-center text-gray-600 hover:text-purple-600 transition-colors">
+          <button className="flex items-center text-white hover:text-purple-600 transition-colors">
             <BiArrowBack className="text-xl" />
             <span className="ml-2">Back</span>
           </button>
@@ -165,11 +164,11 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
           </div>
           <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
     <h5 className="text-center font-bold text-[#6E1EA3] text-3xl">
-      What can <br /> I <br />help you with?
+      What can<br />I<br />help you with?
     </h5>
   </div>
           <div className="absolute bottom-16 w-full flex justify-center space-x-4">
-            <label className="bg-gray-200 text-gray-800 px-8 py-4 rounded cursor-pointer hover:bg-gray-300 transition-colors inline-block text-lg">
+            <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">
     {uploadedFileName || "Upload"}
     <input
       type="file"

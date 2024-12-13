@@ -32,17 +32,17 @@ body {
   align-items: center;
 }
 
-.square span:nth-child(1) {
+/* .square span:nth-child(1) {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, 
-    #ffffff 50%,         /* Green at the center */
-    rgba(160, 132, 202, 0.6)  51%, /* Transparent green ring */
-    #588b76 70%);       /* Purple at the outer edges */
-  /* box-shadow: 0 0 50px rgba(88, 139, 118, 0.8), inset 0 0 50px rgba(160, 132, 202, 0.6); */
+    #ffffff 50%, 
+    #6E1EA3  51%,
+    #3FA738 70%); 
+    box-shadow: 0 0 50px rgba(63, 167, 56, 0.8);
   border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
   transition: 0.5s;
   animation: animate1 6s linear infinite;
@@ -55,10 +55,10 @@ body {
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, 
-    #ffffff 50%,
-    rgba(160, 132, 202, 0.6)  51%,
-    #588b76 70%); 
-  /* box-shadow: 0 0 50px rgba(88, 139, 118, 0.8), inset 0 0 50px rgba(160, 132, 202, 0.6); */
+    #ffffff 50%, 
+    #6E1EA3  51%, 
+    #3FA738 70%);   
+    box-shadow: 0 0 50px rgba(63, 167, 56, 0.8);
   border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
   transition: 0.5s;
   animation: animate2 4s linear infinite;
@@ -71,10 +71,58 @@ body {
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, 
-    #f3f4f6 50%,         /* Green at the center */
-    rgba(160, 132, 202, 0.6)  51%, /* Transparent green ring */
-    #588b76 70%);       /* Purple at the outer edges */
-  box-shadow: 0 0 50px rgba(88, 139, 118, 0.8), inset 0 0 50px rgba(160, 132, 202, 0.6);
+    #ffffff 50%,     
+    #6E1EA3  51%, 
+    #3FA738 70%);        
+    box-shadow: 0 0 50px rgba(63, 167, 56, 0.8);
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  transition: 0.5s;
+  animation: animate3 8s linear infinite;
+} */
+
+.square span:nth-child(1) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, 
+    #ffffff 50%, 
+    #3FA738 51%,
+    #6E1EA3 70%); 
+    /* box-shadow: 0 0 50px rgba(110, 30, 163, 0.8); */
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  transition: 0.5s;
+  animation: animate1 6s linear infinite;
+}
+
+.square span:nth-child(2) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, 
+  #ffffff 50%, 
+  #3FA738 51%,
+  #6E1EA3 70%);   
+  /* box-shadow: 0 0 50px rgba(110, 30, 163, 0.8); */
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  transition: 0.5s;
+  animation: animate2 4s linear infinite;
+}
+
+.square span:nth-child(3) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, 
+  #ffffff 50%, 
+  #3FA738 30%,
+  #6E1EA3 75%);        /* Purple at the outer edges */
+  box-shadow: 0 0 50px rgba(110, 30, 163, 0.8);
   border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
   transition: 0.5s;
   animation: animate3 8s linear infinite;

@@ -1,22 +1,17 @@
 import { BiMessageSquare } from 'react-icons/bi';
 import { useState } from 'react';
+import { BiSolidMessageSquareAdd } from "react-icons/bi";
 
 const Sidebar = ({ onNewChat, onLogin, history }) => {
   return (
-    <div className="w-80 bg-[#9F60B9] text-white fixed h-screen">
+    <div className="w-80 bg-[#1E1F22] text-white fixed h-screen">
       <div className="p-6 flex flex-col justify-between h-full">
         <div>
-          <div className="flex items-center mb-8">
-            <BiMessageSquare className="text-3xl" />
-            {/* <h2 className="text-xl font-semibold ml-3">No Rules Rules</h2> */}
-          </div>
-          
-          <button 
-            onClick={onNewChat} 
-            className="bg-white text-[#9F60B9] px-4 py-2 rounded mb-4 hover:bg-gray-200 transition-colors"
-          >
-            New Chat
-          </button>
+        <div className="flex items-center justify-between mb-4 pt-3">
+  <h1 className="text-xl font-bold">New Chat</h1>
+  <BiSolidMessageSquareAdd onClick={onNewChat} size={32} className='text-[#3FA738] cursor-pointer' />
+</div>
+
 
           <div className="border-t border-white/20 pt-4">
             {/* {history.map((item, index) => (
