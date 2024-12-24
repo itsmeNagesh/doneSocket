@@ -145,7 +145,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     <div className="flex h-screen bg-gray-100">
       {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} />}
       <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
-        <header className="bg-[#1E1F22] h-[80px] p-4 shadow-sm flex justify-between items-center">
+        <header className="bg-[#1E1F22] h-[75px] p-4 shadow-sm flex justify-between items-center">
           <div className="flex items-center">
             <button className="flex items-center text-white hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
               <BiMenu className="text-xl" />
@@ -159,11 +159,11 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
 
         {!showAIPopup ? (
           <main className="flex items-center justify-center h-fit overflow-hidden relative">
-          <div className="text-center space-y-8">
+          <div className="text-center space-y-8 mt-20 pt-10">
             <Hood />
           </div>
           <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
-    <h5 className="text-center font-bold text-[#6E1EA3] text-3xl">
+    <h5 className="text-center font-bold text-[#6E1EA3] text-2xl">
       What can<br />I<br />help you with?
     </h5>
   </div>
