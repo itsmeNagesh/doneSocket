@@ -23,7 +23,7 @@ const AIPopup = ({ onClose, onToggleRecording, isRecording }) => {
         )}
 
         {/* Wave Animation Container */}
-        <div className="bg-gray-100 rounded-lg p-8 mb-8 w-full">
+        <div className="rounded-lg p-8 mb-8 w-full">
   <div className="flex justify-center items-end h-32 space-x-2">
     {[...Array(30)].map((_, i) => {
       // Generate HSL colors, varying the hue from 0 (red) to 270 (purple/blue spectrum)
@@ -32,7 +32,7 @@ const AIPopup = ({ onClose, onToggleRecording, isRecording }) => {
       return (
         <motion.div
           key={i}
-          className="w-3 rounded-full"
+          className="w-1 lg:w-3 rounded-full"
           style={{ backgroundColor: color }}
           animate={{
             height: ['20px', '60px', '20px'],
