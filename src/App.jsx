@@ -20,7 +20,9 @@ function App() {
     setShowRegisterPopup(false);
     setShowLoginPopup(true);
   };
+const onLoginSuccess=()=>{
 
+}
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
@@ -45,7 +47,7 @@ function App() {
               setShowLoginPopup(false);
               setShowRegisterPopup(true);
             }}
-            onLogin={handleLogin}
+            onLoginSuccess={handleLogin}
           />
         )}
 
