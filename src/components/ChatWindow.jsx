@@ -143,7 +143,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
 
   return (
     <div className="flex h-screen bg-[#D9D9D9]">
-      {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} />}
+      {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} isLoggedIn={isLoggedIn} />}
       <div className={`flex-1 flex flex-col min-h-screen overflow-hidden ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
         <header className="bg-[#1E1F22] h-[75px] p-4 shadow-sm flex justify-between items-center">
           <div className="flex items-center">

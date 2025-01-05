@@ -6,7 +6,7 @@ import { IoChatbubble } from "react-icons/io5";
 import { FaBookmark } from "react-icons/fa6";
 import { IoFilterOutline } from "react-icons/io5";
 
-const Sidebar = ({ onNewChat, onLogin }) => {
+const Sidebar = ({ onNewChat, onLogin,isLoggedIn }) => {
   // Updated dummy data for chat and saved history
   const chatHistory = [
     {
@@ -147,12 +147,14 @@ const Sidebar = ({ onNewChat, onLogin }) => {
               </div>
             ))} */}
         </div>
-        <button
-          onClick={onLogin}
-          className="bg-white text-[#9F60B9] px-4 py-2 rounded hover:bg-gray-200 transition-colors"
-        >
-          Login
-        </button>
+       {
+         !isLoggedIn && <button
+         onClick={onLogin}
+         className="bg-white text-[#9F60B9] px-4 py-2 rounded hover:bg-gray-200 transition-colors"
+       >
+         Login
+       </button>
+       }
       </div>
     </div>
   );
