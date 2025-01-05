@@ -5,6 +5,7 @@ import AudioWaveButton from "./AudioWaveButton";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import Speech from 'speak-tts';
+import Hood from './Hood';
 
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
@@ -141,42 +142,48 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[#D9D9D9]">
       {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} />}
-      <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
-        <header className="bg-white p-4 shadow-sm flex justify-between items-center">
+      <div className={`flex-1 flex flex-col min-h-screen overflow-hidden ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
+        <header className="bg-[#1E1F22] h-[75px] p-4 shadow-sm flex justify-between items-center">
           <div className="flex items-center">
-            <button className="flex items-center text-gray-600 hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
+            <button className="flex items-center text-white hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
               <BiMenu className="text-xl" />
             </button>
-            <h1 className="text-xl font-bold ml-4">APEXIQ</h1>
           </div>
-          <button className="flex items-center text-gray-600 hover:text-purple-600 transition-colors">
+          <button className="flex items-center text-white hover:text-purple-600 transition-colors">
             <BiArrowBack className="text-xl" />
             <span className="ml-2">Back</span>
           </button>
         </header>
 
         {!showAIPopup ? (
-          <main className="flex-1 flex flex-col items-center justify-center p-4">
-            <div className="text-center space-y-8">
-              <div>
-                <p className="text-lg mb-4">Upload your files here</p>
-                <label className="bg-gray-200 text-gray-800 px-8 py-4 rounded cursor-pointer hover:bg-gray-300 transition-colors inline-block text-lg">
-                  {uploadedFileName || "Upload"}
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                </label>
-              </div>
-            </div>
-            <div className="absolute bottom-8">
-              <AudioWaveButton onClick={handleAudioWaveButtonClick} />
-            </div>
-          </main>
+          <main className="flex items-center justify-center h-fit overflow-hidden relative">
+          <div className="text-center space-y-8 mt-20 pt-10">
+            <Hood />
+          </div>
+          <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
+    <h5 className="text-center font-bold text-[#6E1EA3] text-2xl">
+      What can<br />I<br />help you with?
+    </h5>
+  </div>
+          <div className="absolute bottom-16 w-full flex justify-center space-x-4">
+            <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">
+    {uploadedFileName || "Upload"}
+    <input
+      type="file"
+      accept=".pdf"
+      className="hidden"
+      onChange={handleFileUpload}
+    />
+  </label>
+
+  <div>
+    <AudioWaveButton onClick={handleAudioWaveButtonClick} />
+  </div>
+</div>
+        </main>
+        
         ) : (
           <AIPopup 
             onClose={() => setShowAIPopup(false)} 
