@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaGoogle, FaGithub, FaFacebookF } from 'react-icons/fa'; // Importing icons
+
 import { callApi } from '../utils/apiClient'; // Adjust the path as needed
 import ReactLoading from 'react-loading'; // Import react-loading
+import { loginWithGoogle, loginWithGithub, loginWithFacebook } from '../utils/auth';
 import axios from "axios"
 const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -70,7 +72,7 @@ const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
       const response = await callApi({
         url: endpoint,
         method: 'POST',
-        data: { email, password },
+        data: { identifier:email, password },
       });
 
       // Assuming the API returns a token or user data upon successful login
@@ -188,7 +190,24 @@ const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
             )}
           </button>
         </form>
-
+        <div>
+        <div className="mt-6 flex flex-col items-center">
+          <hr className="w-full border-t border-gray-300" />
+          <p className="my-4 text-gray-600">or continue with</p>
+          <div className="flex justify-center space-x-4">
+            <button onClick={loginWithGoogle} className="text-red-500 text-3xl">
+              <FaGoogle />
+            </button>
+            <button onClick={loginWithGithub} className="text-gray-700  text-3xl">
+              <FaGithub />
+            </button>
+            <button onClick={loginWithFacebook} className="text-blue-600  text-3xl">
+              <FaFacebookF />
+            </button>
+          </div>
+        </div>
+    
+    </div>
         <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
           Don't have an account?{' '}
           <span
