@@ -6,6 +6,7 @@ import {
     signInWithPopup,
   } from 'firebase/auth';
   import { auth } from '../lib/firebase';
+  import Cookies from 'js-cookie';
   
   // Google Login
   export const loginWithGoogle = async () => {
@@ -13,6 +14,7 @@ import {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log('Google User:', result.user);
+      Cookies.set('googleAccessToken', accessToken, { expires: 7 }); // Cookie expires in 7 days
     } catch (error) {
       console.error('Google Login Error:', error);
     }
@@ -24,6 +26,7 @@ import {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log('GitHub User:', result.user);
+      Cookies.set('githubAccessToken', accessToken, { expires: 7 }); // Cookie expires in 7 days
     } catch (error) {
       console.error('GitHub Login Error:', error);
     }
@@ -35,6 +38,7 @@ import {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log('Facebook User:', result.user);
+      Cookies.set('facebookAccessToken', accessToken, { expires: 7 }); // Cookie expires
     } catch (error) {
       console.error('Facebook Login Error:', error);
     }

@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar";
 import axios from "axios";
 import Speech from 'speak-tts';
 import Hood from './Hood';
-
+// import AudioPlayer from '../components/AudioPlayer';
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
   speech.init({
@@ -35,15 +35,17 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     formData.current.append("file", file);
     setUploadedFileName(file.name);
   };
-
+// Handle Data Upload pdf file
   const sendFormDataToBackend = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/upload-pdf", formData.current, {
+      const csrfToken = Cookies.get('X-CSRFToken');
+      const response = await axios.post("https://api.apexiq.ai/tp/upload/", formData.current, {
         headers: {
+          "X-CSRFToken": csrfToken,
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("File uploaded successfully:", response.data);
+      console.log("Response fron Upload api:", response.data);
       // formData.current.delete("file"); 
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -141,6 +143,34 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+
+// Websocket connection
+  // useEffect(() => {
+  //   socket.current = io('wss://api.apexiq.ai/ws/audio/');
+  //   socket.current.on('connect', () => {
+  //     console.log('WebSocket connection established');
+  //   });
+  //   socket.current.on('message', (data) => {
+  //     console.log('Message from server:', data);
+  //   });
+  //   socket.current.on('disconnect', () => {
+  //     console.log('WebSocket connection closed');
+  //   });
+  //   socket.current.on('error', (error) => {
+  //     console.error('WebSocket error:', error);
+  //   });
+  
+  //   return () => {
+  //     if (socket.current) {
+  //       socket.current.disconnect();
+  //     }
+  //   };
+  // }, []);
+  const exampleData = {
+            text: "You're asking the million-dollar question: what is an agent? Well, let me break it down for you in simple terms.",
+            audio: "1S4FOzI0Cjvk/vo6LOf5OiPYEjv3FBQ7qZcdO4rGHTu+Khg77kgVO53fIDvf+DI7Id4oO8H0ITtk4ik7Or8kOyF/DTuESgk7s20GO+Fh5jpeMec6/qvsOicc1" // Example Base64 audio
+        };
+
   return (
     <div className="flex h-screen bg-[#D9D9D9]">
       {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} isLoggedIn={isLoggedIn} />}
@@ -166,6 +196,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     <h5 className="text-center font-bold text-[#6E1EA3] text-2xl">
       What can<br />I<br />help you with?
     </h5>
+    {/* <AudioPlayer text={exampleData.text} audioBase64={exampleData.audio} /> */}
   </div>
           <div className="absolute bottom-16 w-full flex justify-center space-x-4">
             <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">

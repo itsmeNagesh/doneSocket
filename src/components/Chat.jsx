@@ -96,6 +96,7 @@ const Chat = ({ spokenText, aiResponse }) => {
                 <MessageAvatar role="user" />
               </div>
             )}
+       
             {aiResponse && (
               <div className="flex space-x-3">
                 <MessageAvatar role="assistant" />
@@ -118,6 +119,7 @@ const Chat = ({ spokenText, aiResponse }) => {
                     <div className={`flex ${message.role === 'user' ? 'justify-end' : ''}`}>
                       <p className="font-medium text-xl mb-2">
                         {message.role === 'user' ? 'You:' : 'AI ASSISTANT:'}
+                      
                       </p>
                     </div>
                     <MessageWithControls content={message.content} role={message.role} />
