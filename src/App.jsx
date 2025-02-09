@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Cookies from "js-cookie";
 import ChatWindow from "./components/ChatWindow";
 import LoginPopup from "./components/LoginPopup";
 import RegisterPopup from "./components/RegisterPopup";
@@ -9,24 +10,37 @@ function App() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
 
-  // When the user successfully logs in:
+  
+  useEffect(() => {
+    const sessionId = Cookies.get("sessionId"); 
+    if (sessionId) {
+      setIsLoggedIn(true); 
+    }
+  }, []);
+
+
   const handleLogin = () => {
     setIsLoggedIn(true);
     setShowLoginPopup(false);
   };
 
-  // When the user has registered, we show the Login popup:
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+    setIsLoggedIn(false);
+    Cookies.remove("sessionId"); 
+    window.location.href = "https://apexiq.ai";
+  };
+
+
   const handleRegister = () => {
     setShowRegisterPopup(false);
     setShowLoginPopup(true);
   };
-const onLoginSuccess=()=>{
 
-}
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
-        {/* The ChatWindow is displayed at the root path. */}
         <Routes>
           <Route
             path="/"
@@ -34,12 +48,13 @@ const onLoginSuccess=()=>{
               <ChatWindow
                 isLoggedIn={isLoggedIn}
                 onLogin={() => setShowLoginPopup(true)}
+                onLogout={handleLogout} // Add logout functionality
               />
             }
           />
         </Routes>
 
-        {/* Show the LoginPopup if `showLoginPopup` is true. */}
+        {/* Show LoginPopup if showLoginPopup is true */}
         {showLoginPopup && (
           <LoginPopup
             onClose={() => setShowLoginPopup(false)}
@@ -51,7 +66,7 @@ const onLoginSuccess=()=>{
           />
         )}
 
-        {/* Show the RegisterPopup if `showRegisterPopup` is true. */}
+        {/* Show RegisterPopup if showRegisterPopup is true */}
         {showRegisterPopup && (
           <RegisterPopup
             onClose={() => setShowRegisterPopup(false)}

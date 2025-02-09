@@ -4,8 +4,8 @@ import AIPopup from "./AIPopup";
 import AudioWaveButton from "./AudioWaveButton";
 import Sidebar from "./Sidebar";
 import axios from "axios";
-import Speech from 'speak-tts';
-import Hood from './Hood';
+import Speech from "speak-tts";
+import Hood from "./Hood";
 // import AudioPlayer from '../components/AudioPlayer';
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
@@ -19,12 +19,12 @@ if (speech.hasBrowserSupport()) {
   });
 }
 
-const ChatWindow = ({ isLoggedIn, onLogin }) => {
+const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
   const [showAIPopup, setShowAIPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
   const formData = useRef(new FormData());
   const audioChunks = useRef([]);
   const mediaRecorder = useRef(null);
@@ -35,18 +35,22 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     formData.current.append("file", file);
     setUploadedFileName(file.name);
   };
-// Handle Data Upload pdf file
+  // Handle Data Upload pdf file
   const sendFormDataToBackend = async () => {
     try {
-      const csrfToken = Cookies.get('X-CSRFToken');
-      const response = await axios.post("https://api.apexiq.ai/tp/upload/", formData.current, {
-        headers: {
-          "X-CSRFToken": csrfToken,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const csrfToken = Cookies.get("X-CSRFToken");
+      const response = await axios.post(
+        "https://api.apexiq.ai/tp/upload/",
+        formData.current,
+        {
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log("Response fron Upload api:", response.data);
-      // formData.current.delete("file"); 
+      // formData.current.delete("file");
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -96,16 +100,20 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
       mediaRecorder.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
         const audioFormData = new FormData();
         audioFormData.append("audio", audioBlob);
 
         try {
-          const response = await axios.post("http://localhost:3000/process-audio", audioFormData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+          const response = await axios.post(
+            "http://localhost:3000/process-audio",
+            audioFormData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
           const textResponse = response.data.text;
           console.log("Received text response:", textResponse);
           await speech.speak({
@@ -143,8 +151,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
-// Websocket connection
+  // Websocket connection
   // useEffect(() => {
   //   socket.current = io('wss://api.apexiq.ai/ws/audio/');
   //   socket.current.on('connect', () => {
@@ -159,7 +166,7 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
   //   socket.current.on('error', (error) => {
   //     console.error('WebSocket error:', error);
   //   });
-  
+
   //   return () => {
   //     if (socket.current) {
   //       socket.current.disconnect();
@@ -167,58 +174,85 @@ const ChatWindow = ({ isLoggedIn, onLogin }) => {
   //   };
   // }, []);
   const exampleData = {
-            text: "You're asking the million-dollar question: what is an agent? Well, let me break it down for you in simple terms.",
-            audio: "1S4FOzI0Cjvk/vo6LOf5OiPYEjv3FBQ7qZcdO4rGHTu+Khg77kgVO53fIDvf+DI7Id4oO8H0ITtk4ik7Or8kOyF/DTuESgk7s20GO+Fh5jpeMec6/qvsOicc1" // Example Base64 audio
-        };
+    text: "You're asking the million-dollar question: what is an agent? Well, let me break it down for you in simple terms.",
+    audio:
+      "1S4FOzI0Cjvk/vo6LOf5OiPYEjv3FBQ7qZcdO4rGHTu+Khg77kgVO53fIDvf+DI7Id4oO8H0ITtk4ik7Or8kOyF/DTuESgk7s20GO+Fh5jpeMec6/qvsOicc1", // Example Base64 audio
+  };
 
   return (
     <div className="flex h-screen bg-[#D9D9D9]">
-      {isSidebarOpen && <Sidebar onNewChat={handleNewChat} onLogin={onLogin} history={[]} isLoggedIn={isLoggedIn} />}
-      <div className={`flex-1 flex flex-col min-h-screen overflow-hidden ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
+      {isSidebarOpen && (
+        <Sidebar
+          onNewChat={handleNewChat}
+          onLogin={onLogin}
+          history={[]}
+          isLoggedIn={isLoggedIn}
+        />
+      )}
+      <div
+        className={`flex-1 flex flex-col min-h-screen overflow-hidden ${
+          isSidebarOpen ? "ml-80" : "ml-0"
+        }`}
+      >
         <header className="bg-[#1E1F22] h-[75px] p-4 shadow-sm flex justify-between items-center">
           <div className="flex items-center">
-            <button className="flex items-center text-white hover:text-purple-600 transition-colors" onClick={toggleSidebar}>
+            <button
+              className="flex items-center text-white hover:text-purple-600 transition-colors"
+              onClick={toggleSidebar}
+            >
               <BiMenu className="text-xl" />
             </button>
           </div>
-          <button className="flex items-center text-white hover:text-purple-600 transition-colors">
-            <BiArrowBack className="text-xl" />
-            <span className="ml-2">Back</span>
-          </button>
+
+          <div className="flex items-center space-x-4">
+            {isLoggedIn && (
+              <button
+                className="flex items-center hover:text-purple-600 transition-colors bg-white text-black px-4 py-2 rounded"
+                onClick={onLogout} // ✅ Fixed: Corrected `onClick` attribute
+              >
+                <span className="ml-2">Logout</span>
+              </button>
+            )}
+            <button className="flex items-center text-white hover:text-purple-600 transition-colors"  onClick={() => (window.location.href = "https://apexiq.ai")}>
+              <BiArrowBack className="text-xl" />
+              <span className="ml-2">Back</span>
+            </button>
+          </div>
         </header>
 
         {!showAIPopup ? (
           <main className="flex items-center justify-center h-fit overflow-hidden relative">
-          <div className="text-center space-y-8 mt-20 pt-10">
-            <Hood />
-          </div>
-          <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
-    <h5 className="text-center font-bold text-[#6E1EA3] text-2xl">
-      What can<br />I<br />help you with?
-    </h5>
-    {/* <AudioPlayer text={exampleData.text} audioBase64={exampleData.audio} /> */}
-  </div>
-          <div className="absolute bottom-16 w-full flex justify-center space-x-4">
-            <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">
-    {uploadedFileName || "Upload"}
-    <input
-      type="file"
-      accept=".pdf"
-      className="hidden"
-      onChange={handleFileUpload}
-    />
-  </label>
+            <div className="text-center space-y-8 mt-20 pt-10">
+              <Hood />
+            </div>
+            <div className="fixed top-3/2 transform -translate-y-1/2 flex justify-center">
+              <h5 className="text-center font-bold text-[#6E1EA3] text-2xl">
+                What can
+                <br />I<br />
+                help you with?
+              </h5>
+              {/* <AudioPlayer text={exampleData.text} audioBase64={exampleData.audio} /> */}
+            </div>
+            <div className="absolute bottom-16 w-full flex justify-center space-x-4">
+              <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">
+                {uploadedFileName || "Upload"}
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </label>
 
-  <div>
-    <AudioWaveButton onClick={handleAudioWaveButtonClick} />
-  </div>
-</div>
-        </main>
-        
+              <div>
+                <AudioWaveButton onClick={handleAudioWaveButtonClick} />
+              </div>
+            </div>
+          </main>
         ) : (
-          <AIPopup 
-            onClose={() => setShowAIPopup(false)} 
-            onToggleRecording={handleToggleRecording} 
+          <AIPopup
+            onClose={() => setShowAIPopup(false)}
+            onToggleRecording={handleToggleRecording}
             isRecording={isRecording}
           />
         )}
