@@ -37,10 +37,11 @@ const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
   };
   // Handle Data Upload pdf file
   const sendFormDataToBackend = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL; 
     try {
       const csrfToken = Cookies.get("X-CSRFToken");
       const response = await axios.post(
-        "https://api.apexiq.ai/tp/upload/",
+        `${apiUrl}tp/upload/`,
         formData.current,
         {
           headers: {
