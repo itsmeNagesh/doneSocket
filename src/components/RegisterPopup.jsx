@@ -43,7 +43,7 @@ const RegisterPopup = ({ onClose, onLogin }) => {
     setIsLoading(true);
     try {
       const apiUrl = import.meta.env.VITE_API_URL; // Adjust according to environment setup
-      const endpoint = `${apiUrl}/api/register/`; // Registration endpoint
+      const endpoint = `${apiUrl}/api/signup/`; // Registration endpoint
 
       const payload = {
         username,
