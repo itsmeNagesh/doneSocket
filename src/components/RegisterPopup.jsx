@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import ReactLoading from 'react-loading';
-import { callApi } from '../utils/apiClient'; // Adjust path if needed
+import { POST } from '../utils/apiClient'; // Adjust path if needed
 
 const RegisterPopup = ({ onClose, onLogin }) => {
   const [username, setUsername] = useState('');
@@ -52,11 +52,8 @@ const RegisterPopup = ({ onClose, onLogin }) => {
         phone_number: phoneNumber || '', // Optional phone number
       };
 
-      const response = await callApi({
-        url: endpoint,
-        method: 'POST',
-        data: payload,
-      });
+      const response = await POST(endpoint,payload,
+      );
 
       console.log('Registration successful:', response);
 

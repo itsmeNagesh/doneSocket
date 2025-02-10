@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes, FaGoogle, FaGithub, FaFacebookF } from 'react-icons/fa'; // Importing icons
 import Cookies from 'js-cookie';
-import { callApi } from '../utils/apiClient'; // Adjust the path as needed
+import { POST} from '../utils/apiClient'; // Adjust the path as needed
 import ReactLoading from 'react-loading'; // Import react-loading
-import { loginWithGoogle, loginWithGithub, loginWithFacebook } from '../utils/auth';
-import axios from "axios"
 const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -68,20 +66,11 @@ const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL; // Accessing Vite environment variable
       const endpoint = `${apiUrl}/api/login/`;
-
-      const response = await callApi({
-        url: endpoint,
-        method: 'POST',
-        data: { identifier:email, password },
-      });
-      Cookies.set('sessionId', response.session_id, { expires: 7 });
-      // Assuming the API returns a token or user data upon successful login
+      POST
+      const response = await POST(endpoint,{ identifier:email, password },
+      );
       console.log('Login successful:', response);
 
-      // Optionally, store the token (e.g., in localStorage)
-      // localStorage.setItem('authToken', response.token);
-
-      // Notify parent component of successful login
       if (onLoginSuccess) {
         onLoginSuccess(response); // Pass any relevant data
       }
@@ -196,14 +185,11 @@ const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
           <hr className="w-full border-t border-gray-300" />
           <p className="my-4 text-gray-600">or continue with</p>
           <div className="flex justify-center space-x-4">
-            <button onClick={loginWithGoogle} className="text-red-500 text-3xl">
+            <button  className="text-red-500 text-3xl">
               <FaGoogle />
             </button>
-            <button onClick={loginWithGithub} className="text-gray-700  text-3xl">
+            <button  className="text-gray-700  text-3xl">
               <FaGithub />
-            </button>
-            <button onClick={loginWithFacebook} className="text-blue-600  text-3xl">
-              <FaFacebookF />
             </button>
           </div>
         </div>
