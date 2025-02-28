@@ -45,19 +45,19 @@ const sendFormDataToBackend = async (file) => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   try {
-      const csrfToken = Cookies.get("csrftoken") || ""; // Ensure CSRF token is fetched
+      const csrfToken = Cookies.get("csrftoken") || ""; 
       const formData = new FormData();
       formData.append("file", file);
-console.log(csrfToken)
+      console.log("csrfToken",csrfToken)
       const response = await axios.post(
           `${apiUrl}/tp/upload/`,
           formData, 
           {
               headers: {
-                  "X-CSRFToken": csrfToken, // If required
+                  "X-CSRFToken": csrfToken, 
                   "Content-Type": "multipart/form-data",
               },
-              withCredentials: true,  // ✅ Ensures session authentication is included
+              credentials: "include",
           }
       );
 
