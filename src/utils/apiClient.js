@@ -14,10 +14,8 @@ const getCookie = (name) => {
 
 const createHeader = (_URL, options = {}) => {
   let header = {
-    Accept: '*/*', // ✅ Accept all response types
-    'X-CSRFToken': getCookie('csrftoken'),
-    'Session-ID': getCookie('sessionid'),
-    Authorization: 'Bearer ' + sessionStorage.getItem('accessToken'),
+    Accept: '*/*',
+    'Content-Type': 'application/json'
   };
 
   options = { ...options, headers: header };

@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import axios from "axios";
 import Speech from "speak-tts";
 import Hood from "./Hood";
+import Cookies from "js-cookie";
 // import AudioPlayer from '../components/AudioPlayer';
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
@@ -28,34 +29,44 @@ const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
   const formData = useRef(new FormData());
   const audioChunks = useRef([]);
   const mediaRecorder = useRef(null);
+  const formDataRef = useRef(null);
+
+
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
+    if (!file) return;
+
     console.log("Uploaded file:", file);
-    formData.current.append("file", file);
-    setUploadedFileName(file.name);
-  };
-  // Handle Data Upload pdf file
-  const sendFormDataToBackend = async () => {
-    const apiUrl = import.meta.env.VITE_API_URL; 
-    try {
-      const csrfToken = Cookies.get("X-CSRFToken");
+    sendFormDataToBackend(file);
+};
+
+const sendFormDataToBackend = async (file) => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  try {
+      const csrfToken = Cookies.get("csrftoken") || ""; // Ensure CSRF token is fetched
+      const formData = new FormData();
+      formData.append("file", file);
+console.log(csrfToken)
       const response = await axios.post(
-        `${apiUrl}tp/upload/`,
-        formData.current,
-        {
-          headers: {
-            "X-CSRFToken": csrfToken,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+          `${apiUrl}/tp/upload/`,
+          formData, 
+          {
+              headers: {
+                  "X-CSRFToken": csrfToken, // If required
+                  "Content-Type": "multipart/form-data",
+              },
+              withCredentials: true,  // ✅ Ensures session authentication is included
+          }
       );
-      console.log("Response fron Upload api:", response.data);
-      // formData.current.delete("file");
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
+
+      console.log("Response from Upload API:", response.data);
+  } catch (error) {
+      console.error("Error uploading file:", error.response?.data || error);
+  }
+};
+
 
   const handleAudioWaveButtonClick = async () => {
     if (!isLoggedIn) {
@@ -236,7 +247,7 @@ const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
             </div>
             <div className="absolute bottom-16 w-full flex justify-center space-x-4">
               <label className="bg-[#4B4F5B] text-white px-8 py-4 rounded cursor-pointer hover:bg-[#797c85] transition-colors inline-block text-lg">
-                {uploadedFileName || "Upload"}
+                {  "Upload"}
                 <input
                   type="file"
                   accept=".pdf"
