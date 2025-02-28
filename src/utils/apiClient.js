@@ -15,8 +15,7 @@ const getCookie = (name) => {
 const createHeader = (_URL, options = {}) => {
   let header = {
     Accept: '*/*',
-    'Content-Type': 'application/json',
-    withCredentials: true
+    'Content-Type': 'application/json'
   };
 
   options = { ...options, headers: header };
