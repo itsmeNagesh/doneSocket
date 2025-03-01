@@ -6,7 +6,7 @@ import LoginPopup from "./components/LoginPopup";
 import RegisterPopup from "./components/RegisterPopup";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
 

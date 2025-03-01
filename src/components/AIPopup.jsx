@@ -1,39 +1,150 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useContext } from "react";
 import { motion } from "framer-motion";
 import { FaCheck, FaMicrophone, FaStop } from "react-icons/fa";
-import ChatWindow from "./Chat"; // Import the new component
+import Chat from "./Chat"; // Import the Chat component
+import { DataContext } from "../context/DataContext";
 
-const AIPopup = ({ onToggleRecording, isRecording }) => {
+const AIPopup = ({ onToggleRecording,  }) => {
   const [showGeneratingResponse, setShowGeneratingResponse] = useState(false);
   const [spokenText, setSpokenText] = useState("LISTENING");
   const [showChatWindow, setShowChatWindow] = useState(false);
-  const [aiResponse, setAiResponse] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [isVoiceResponse, setIsVoiceResponse] = useState(false); 
+
+  const {isRecording, collection_name, transcript, inputText, setInputText, messages,currentMessage, setCurrentMessage, setMessages } = useContext(DataContext);
 
   const handleCheckClick = () => {
+    onToggleRecording();
     setShowGeneratingResponse(true);
   };
 
   const handleRecordingToggle = () => {
     onToggleRecording();
     if (!isRecording) {
-      setSpokenText("This is the text being spoken...");
+      setSpokenText("Recording...");
     } else {
       setSpokenText("LISTENING");
     }
   };
 
   useEffect(() => {
-    if (showGeneratingResponse) {
-      setTimeout(() => {
-        setAiResponse("This is the AI's answer to your question.");
-        setShowChatWindow(true);
-      }, 3000);
+    if (showGeneratingResponse && transcript) {
+      sendMessage();
     }
-  }, [showGeneratingResponse]);
+  }, [showGeneratingResponse, transcript]);
 
+  const speakText = (text) => {
+    console.log("speakText called with text:", text); // Add this line
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US"; // Set language
+      utterance.rate = 1.0; // Adjust speed if needed
+      speechSynthesis.speak(utterance);
+      console.log("Speech synthesis started"); // Add this line
+    } else {
+      console.warn("Speech synthesis not supported in this browser.");
+    }
+  };
+  
+  useEffect(() => {
+    const newSocket = new WebSocket("wss://ws.apexiq.ai/ws/audio/");
+    setSocket(newSocket);
+  
+    newSocket.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
+  
+    newSocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("Message from server:", data);
+  
+        if (data.text) {
+          // Start streaming the response word by word
+          // streamMessage(data.text);
+          streamMessage("Hello, how can I assist you?"|| data.text);
+          if (isVoiceResponse) {
+            console.log("Calling speakText with:", data.text); // Add this line
+            speakText(data.text);
+          }
+          // Set showChatWindow to true when a response is received
+          setShowChatWindow(true);
+        }
+      } catch (error) {
+        setShowChatWindow(true);
+        console.error("Error parsing message:", error);
+      }
+    };
+  
+    newSocket.onclose = (event) => {
+      setShowChatWindow(true);
+  //     console.log(" WebSocket Closed");
+  // console.log(" Close Event:", event);
+  // console.log("Close Code:", event.code, "Reason:", event.reason);
+    };
+  
+    newSocket.onerror = (error) => {
+      setShowChatWindow(true);
+      console.error("WebSocket error:", error);
+    };
+  
+    return () => {
+      if (newSocket) newSocket.close();
+    };
+  }, []);
+  
+  // Stream the response word by word
+  const streamMessage = (text) => {
+    let words = text.split(" ");
+    let index = 0;
+    let tempMessage = ""; // Temporary message state
+    
+    const interval = setInterval(() => {
+      if (index < words.length) {
+        tempMessage += (tempMessage ? " " : "") + words[index];
+        setCurrentMessage(tempMessage );
+        index++;
+      } else {
+        clearInterval(interval);
+        setMessages((prev) => [...prev, { role: "assistant", content: tempMessage }]);
+        setCurrentMessage("");
+      }
+    }, 200); // Adjust speed as needed
+  };
+  
+  
+  const sendMessage = () => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      alert("WebSocket is not connected!");
+      return;
+    }
+  
+    const message = {
+      session_id: "v3bteula7ncrsq5y792dqtmohxqwpvv0",
+      collection_name: collection_name || "pdf_collection_20250228_201524",
+      text_query: inputText || transcript,
+      audio_query: "",
+    };
+  
+    // Add user message to the chat
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: inputText },
+    ]);
+  
+    socket.send(JSON.stringify(message));
+    console.log("Message sent:", message);
+    setInputText(""); // Clear input field
+    setIsVoiceResponse(!!transcript);
+  };
+  
   if (showChatWindow) {
-    return <ChatWindow spokenText={spokenText} aiResponse={aiResponse} />;
+    return <Chat speakText={speakText}
+     spokenText={transcript|| "spoken text will be display here "} aiResponse={"Ai response here visible here.."} senddataToServer={sendMessage} onToggleRecording={onToggleRecording} />;
   }
+ 
+
 
   return (
     <main className="justify-center h-full relative">
@@ -44,7 +155,7 @@ const AIPopup = ({ onToggleRecording, isRecording }) => {
           exit={{ opacity: 0, scale: 0.9 }}
           className="h-full flex flex-col items-center justify-center"
         >
-          {/* New UI for generating response */}
+          {/* Loading animation */}
           <div className="mt-20 flex justify-center items-center">
             <div className="w-8 h-8 bg-red-500 rounded-full animate-bounce mr-2"></div>
             <div className="w-8 h-8 bg-blue-500 rounded-full animate-bounce mr-2"></div>
@@ -70,7 +181,7 @@ const AIPopup = ({ onToggleRecording, isRecording }) => {
             transition={{ duration: 0.3 }}
             className="text-2xl font-medium text-black self-start pl-10 ml-10"
           >
-            {spokenText}
+            {transcript}
           </motion.div>
 
           {/* Wave Animation */}
@@ -91,7 +202,7 @@ const AIPopup = ({ onToggleRecording, isRecording }) => {
               })}
             </div>
           </div>
-
+         
           {/* Buttons */}
           <div className="flex space-x-4">
             <motion.button
@@ -126,3 +237,4 @@ const AIPopup = ({ onToggleRecording, isRecording }) => {
 };
 
 export default AIPopup;
+

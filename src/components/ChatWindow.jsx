@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect,useContext } from "react";
 import { BiArrowBack, BiMenu } from "react-icons/bi";
 import AIPopup from "./AIPopup";
 import AudioWaveButton from "./AudioWaveButton";
@@ -7,7 +7,7 @@ import axios from "axios";
 import Speech from "speak-tts";
 import Hood from "./Hood";
 import Cookies from "js-cookie";
-// import AudioPlayer from '../components/AudioPlayer';
+import { DataContext } from "../context/DataContext";
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
   speech.init({
@@ -21,17 +21,20 @@ if (speech.hasBrowserSupport()) {
 }
 
 const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
+  const { setAudioForServer, setMessages, inputText, setInputText,isRecording, setIsRecording
+     ,transcript, setTranscript } = useContext(DataContext);
   const [showAIPopup, setShowAIPopup] = useState(false);
   const [history, setHistory] = useState([]);
   const [uploadedFileName, setUploadedFileName] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
+  // const [isRecording, setIsRecording] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
   const formData = useRef(new FormData());
   const audioChunks = useRef([]);
   const mediaRecorder = useRef(null);
   const formDataRef = useRef(null);
-
-
+  const mediaRecorderRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -67,129 +70,108 @@ const sendFormDataToBackend = async (file) => {
   }
 };
 
+useEffect(() => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Speech recognition is not supported in this browser.");
+    return;
+  }
 
-  const handleAudioWaveButtonClick = async () => {
-    if (!isLoggedIn) {
-      onLogin();
-      return;
-    }
-    if (!uploadedFileName) {
-      alert("Please upload a file first.");
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      if (stream) {
-        mediaRecorder.current = new MediaRecorder(stream);
-        mediaRecorder.current.ondataavailable = (event) => {
-          audioChunks.current.push(event.data);
-        };
-        sendFormDataToBackend();
-        setShowAIPopup(true);
+  recognitionRef.current = new SpeechRecognition();
+  recognitionRef.current.continuous = true;
+  recognitionRef.current.interimResults = true;
+  recognitionRef.current.lang = "en-US";
+
+  recognitionRef.current.onresult = (event) => {
+    let finalTranscript = "";
+    let interimTranscript = "";
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript + " ";
+      } else {
+        interimTranscript += transcript;
       }
-    } catch (error) {
-      alert("Please enable microphone access to use this feature.");
     }
+
+    setTranscript((prev) => prev + finalTranscript);
   };
 
-  const handleToggleRecording = () => {
-    if (isRecording) {
-      handleStopRecording();
-    } else {
-      handleStartRecording();
-    }
+  recognitionRef.current.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
   };
+}, []);
 
-  const handleStartRecording = () => {
-    if (mediaRecorder.current && mediaRecorder.current.state === "inactive") {
-      audioChunks.current = [];
-      mediaRecorder.current.start();
-      setIsRecording(true);
-    }
-  };
+const startRecording = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      audioChunksRef.current.push(event.data);
+    };
+    mediaRecorderRef.current.onstop = () => {
+      const audioBlob = new Blob(audioChunksRef.current, {
+        type: "audio/wav",
+      });
+      audioChunksRef.current = [];
+    };
+    mediaRecorderRef.current.start();
+    recognitionRef.current.start();
+    // setIsRecording(true);
+  } catch (err) {
+    console.error("Error accessing microphone:", err);
+  }
+};
 
-  const handleStopRecording = async () => {
-    if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
-      mediaRecorder.current.stop();
-      mediaRecorder.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
-        const audioFormData = new FormData();
-        audioFormData.append("audio", audioBlob);
+const stopRecording = () => {
+  mediaRecorderRef.current.stop();
+  recognitionRef.current.stop();
+  // setIsRecording(false);
+};
 
-        try {
-          const response = await axios.post(
-            "http://localhost:3000/process-audio",
-            audioFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-          const textResponse = response.data.text;
-          console.log("Received text response:", textResponse);
-          await speech.speak({
-            text: textResponse,
-          });
-          setHistory((prevHistory) => [...prevHistory, textResponse]);
-          audioChunks.current = [];
-        } catch (error) {
-          console.error("Error sending audio file:", error);
-        }
-      };
-      setIsRecording(false);
-    }
-  };
 
-  // API to get audio file
-  // const response = await axios.post("http://localhost:3000/get-audio", audioFormData, {
-  //   headers: {
-  //     "Content-Type": "multipart/form-data",
-  //   },
-  // });
-  // const audioBlob = response.data.audio;
-  // const audioUrl = URL.createObjectURL(audioBlob);
-  // const audio = new Audio(audioUrl);
-  // audio.play();
 
-  const handleNewChat = () => {
-    setHistory([]);
-    formData.current.delete("file");
-    setUploadedFileName("");
-    setShowAIPopup(false);
-  };
+const handleAudioWaveButtonClick = async () => {
+  if (!isLoggedIn) {
+    onLogin();
+    return;
+  }
+  // if (!uploadedFileName) {
+  //   alert("Please upload a file first.");
+  //   return;
+  // }
+  try {
+    await startRecording();
+    setShowAIPopup(true);
+  } catch (error) {
+    alert("Please enable microphone access to use this feature.");
+  }
+};
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+const handleNewChat = () => {
+  setHistory([]);
+  formData.current.delete("file");
+  setUploadedFileName("");
+  setShowAIPopup(false);
+};
 
-  // Websocket connection
-  // useEffect(() => {
-  //   socket.current = io('wss://api.apexiq.ai/ws/audio/');
-  //   socket.current.on('connect', () => {
-  //     console.log('WebSocket connection established');
-  //   });
-  //   socket.current.on('message', (data) => {
-  //     console.log('Message from server:', data);
-  //   });
-  //   socket.current.on('disconnect', () => {
-  //     console.log('WebSocket connection closed');
-  //   });
-  //   socket.current.on('error', (error) => {
-  //     console.error('WebSocket error:', error);
-  //   });
+const toggleSidebar = () => {
+  setIsSidebarOpen(!isSidebarOpen);
+};
 
-  //   return () => {
-  //     if (socket.current) {
-  //       socket.current.disconnect();
-  //     }
-  //   };
-  // }, []);
-  const exampleData = {
-    text: "You're asking the million-dollar question: what is an agent? Well, let me break it down for you in simple terms.",
-    audio:
-      "1S4FOzI0Cjvk/vo6LOf5OiPYEjv3FBQ7qZcdO4rGHTu+Khg77kgVO53fIDvf+DI7Id4oO8H0ITtk4ik7Or8kOyF/DTuESgk7s20GO+Fh5jpeMec6/qvsOicc1", // Example Base64 audio
-  };
+const onToggleRecording = () => {
+  if (!isRecording) {
+    
+    stopRecording();
+  } else {
+    startRecording();
+  }
+};
+
+  
 
   return (
     <div className="flex h-screen bg-[#D9D9D9]">
@@ -261,13 +243,13 @@ const sendFormDataToBackend = async (file) => {
               </div>
             </div>
           </main>
-        ) : (
-          <AIPopup
-            onClose={() => setShowAIPopup(false)}
-            onToggleRecording={handleToggleRecording}
-            isRecording={isRecording}
-          />
-        )}
+        ) :(
+        <AIPopup
+          onClose={() => setShowAIPopup(false)}
+          onToggleRecording={onToggleRecording}
+        
+        />
+      )}
       </div>
     </div>
   );
