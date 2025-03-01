@@ -120,7 +120,7 @@ const startRecording = async () => {
     };
     mediaRecorderRef.current.start();
     recognitionRef.current.start();
-    // setIsRecording(true);
+    setIsRecording(true);
   } catch (err) {
     console.error("Error accessing microphone:", err);
   }
@@ -129,16 +129,16 @@ const startRecording = async () => {
 const stopRecording = () => {
   mediaRecorderRef.current.stop();
   recognitionRef.current.stop();
-  // setIsRecording(false);
+  setIsRecording(false);
 };
 
 
 
 const handleAudioWaveButtonClick = async () => {
-  if (!isLoggedIn) {
-    onLogin();
-    return;
-  }
+  // if (!isLoggedIn) {
+  //   onLogin();
+  //   return;
+  // }
   // if (!uploadedFileName) {
   //   alert("Please upload a file first.");
   //   return;
@@ -150,7 +150,6 @@ const handleAudioWaveButtonClick = async () => {
     alert("Please enable microphone access to use this feature.");
   }
 };
-
 const handleNewChat = () => {
   setHistory([]);
   formData.current.delete("file");
@@ -163,8 +162,7 @@ const toggleSidebar = () => {
 };
 
 const onToggleRecording = () => {
-  if (!isRecording) {
-    
+  if (isRecording) {
     stopRecording();
   } else {
     startRecording();

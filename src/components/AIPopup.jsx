@@ -13,7 +13,6 @@ const AIPopup = ({ onToggleRecording,  }) => {
   const [isVoiceResponse, setIsVoiceResponse] = useState(false); 
 
   const {isRecording, collection_name, transcript, inputText, setInputText, messages,currentMessage, setCurrentMessage, setMessages } = useContext(DataContext);
-
   const handleCheckClick = () => {
     onToggleRecording();
     setShowGeneratingResponse(true);
@@ -27,6 +26,7 @@ const AIPopup = ({ onToggleRecording,  }) => {
       setSpokenText("LISTENING");
     }
   };
+
 
   useEffect(() => {
     if (showGeneratingResponse && transcript) {
@@ -63,7 +63,7 @@ const AIPopup = ({ onToggleRecording,  }) => {
         if (data.text) {
           // Start streaming the response word by word
           // streamMessage(data.text);
-          streamMessage("Hello, how can I assist you?"|| data.text);
+          streamMessage(data.text);
           if (isVoiceResponse) {
             console.log("Calling speakText with:", data.text); // Add this line
             speakText(data.text);
@@ -72,20 +72,20 @@ const AIPopup = ({ onToggleRecording,  }) => {
           setShowChatWindow(true);
         }
       } catch (error) {
-        setShowChatWindow(true);
+     
         console.error("Error parsing message:", error);
       }
     };
   
     newSocket.onclose = (event) => {
-      setShowChatWindow(true);
+    
   //     console.log(" WebSocket Closed");
   // console.log(" Close Event:", event);
   // console.log("Close Code:", event.code, "Reason:", event.reason);
     };
   
     newSocket.onerror = (error) => {
-      setShowChatWindow(true);
+     
       console.error("WebSocket error:", error);
     };
   
@@ -110,7 +110,7 @@ const AIPopup = ({ onToggleRecording,  }) => {
         setMessages((prev) => [...prev, { role: "assistant", content: tempMessage }]);
         setCurrentMessage("");
       }
-    }, 200); // Adjust speed as needed
+    }, 400); // Adjust speed as needed
   };
   
   
@@ -121,7 +121,7 @@ const AIPopup = ({ onToggleRecording,  }) => {
     }
   
     const message = {
-      session_id: "v3bteula7ncrsq5y792dqtmohxqwpvv0",
+      session_id: "y66c6izx612klhhwezyvke3x09xomt19",
       collection_name: collection_name || "pdf_collection_20250228_201524",
       text_query: inputText || transcript,
       audio_query: "",
@@ -141,7 +141,8 @@ const AIPopup = ({ onToggleRecording,  }) => {
   
   if (showChatWindow) {
     return <Chat speakText={speakText}
-     spokenText={transcript|| "spoken text will be display here "} aiResponse={"Ai response here visible here.."} senddataToServer={sendMessage} onToggleRecording={onToggleRecording} />;
+     spokenText={transcript|| "spoken text will be display here "} 
+      senddataToServer={sendMessage} onToggleRecording={onToggleRecording} />;
   }
  
 
