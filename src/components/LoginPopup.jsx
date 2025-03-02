@@ -3,10 +3,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes, FaGoogle, FaGithub, FaFacebookF } from 'react-icons/fa'; // Importing icons
-import Cookies from 'js-cookie';
-import { POST} from '../utils/apiClient'; // Adjust the path as needed
 import ReactLoading from 'react-loading'; // Import react-loading
-const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
+import axios from 'axios';
+const LoginPopup = ({ onClose, onRegister, onLoginSuccess,fetchCsrfToken,csrfToken }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -66,13 +65,25 @@ const LoginPopup = ({ onClose, onRegister, onLoginSuccess }) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL; // Accessing Vite environment variable
       const endpoint = `${apiUrl}/api/login/`;
-      POST
-      const response = await POST(endpoint,{ identifier:email, password },
+       const response = await axios.post(
+        endpoint,
+        { identifier, password },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          withCredentials: true,
+        }
       );
-      console.log('Login successful:', response);
-
+      if (response.status === 200) {
+        alert('Login successful!');
+        fetchCsrfToken(); 
+      } else {
+        setError('Login failed');
+      }
       if (onLoginSuccess) {
-        onLoginSuccess(response); // Pass any relevant data
+        onLoginSuccess(response);
       }
 
       // Close the popup

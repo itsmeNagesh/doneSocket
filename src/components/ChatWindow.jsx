@@ -6,8 +6,8 @@ import Sidebar from "./Sidebar";
 import axios from "axios";
 import Speech from "speak-tts";
 import Hood from "./Hood";
-import Cookies from "js-cookie";
 import { DataContext } from "../context/DataContext";
+
 const speech = new Speech();
 if (speech.hasBrowserSupport()) {
   speech.init({
@@ -20,7 +20,7 @@ if (speech.hasBrowserSupport()) {
   });
 }
 
-const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
+const ChatWindow = ({ isLoggedIn, onLogin, onLogout,csrfToken }) => {
   const { setAudioForServer, setMessages, inputText, setInputText,isRecording, setIsRecording
      ,transcript, setTranscript } = useContext(DataContext);
   const [showAIPopup, setShowAIPopup] = useState(false);
@@ -41,32 +41,34 @@ const ChatWindow = ({ isLoggedIn, onLogin, onLogout }) => {
     if (!file) return;
 
     console.log("Uploaded file:", file);
-    sendFormDataToBackend(file);
+    handlePdfUpload(file);
 };
 
-const sendFormDataToBackend = async (file) => {
-  const apiUrl = import.meta.env.VITE_API_URL;
-
+const handlePdfUpload = async (file) => {
+  e.preventDefault();
   try {
-      const csrfToken = Cookies.get("csrftoken"; 
-      const formData = new FormData();
-      formData.append("file", file);
-      console.log("csrfToken",csrfToken)
-      const response = await axios.post(
-          `${apiUrl}/tp/upload/`,
-          formData, 
-          {
-              headers: {
-                  "X-CSRFToken": csrfToken, 
-                  "Content-Type": "multipart/form-data",
-              },
-              withCredentials: true,
-          }
-      );
+    const formData = new FormData();
+    formData.append('file', file);
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const response = await axios.post(
+      `{apiUrl}/tp/upload/`,
+      formData,
+      {
+        headers: {
+          'X-CSRFToken': csrfToken,
+        },
+        withCredentials: true,
+      }
+    );
 
-      console.log("Response from Upload API:", response.data);
-  } catch (error) {
-      console.error("Error uploading file:", error.response?.data || error);
+    if (response.status === 201) {
+      alert('PDF uploaded successfully!');
+      console.log('PDF upload response:', response.data);
+    } else {
+      setError('PDF upload failed');
+    }
+  } catch (err) {
+    setError(err.response?.data?.error || 'PDF upload failed');
   }
 };
 

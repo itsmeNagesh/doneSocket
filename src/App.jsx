@@ -1,22 +1,36 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Cookies from "js-cookie";
 import ChatWindow from "./components/ChatWindow";
 import LoginPopup from "./components/LoginPopup";
 import RegisterPopup from "./components/RegisterPopup";
-
+import Cookies from 'universal-cookie';
+import axios from "axios";
 function App() {
+  const cookies = new Cookies();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
-
+  const [csrfToken, setCsrfToken] = useState('');
   
+  const fetchCsrfToken = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    try {
+      await axios.get(`${apiUrl}/tp/csrf/`, {
+        withCredentials: true,
+      });
+      const token = cookies.get('csrftoken');
+      setCsrfToken(token);
+    } catch (err) {
+      console.error('Failed to fetch CSRF token:', err);
+    }
+  };
+
   useEffect(() => {
-    const sessionId = Cookies.get("sessionid"); 
-    if (sessionId) {
+    fetchCsrfToken();
+    if (csrfToken) {
       setIsLoggedIn(true); 
     }
-  }, []);
+  }, [csrfToken]);
 
 
   const handleLogin = () => {
@@ -45,6 +59,7 @@ function App() {
             element={
               <ChatWindow
                 isLoggedIn={isLoggedIn}
+                csrfToken={csrfToken}
                 onLogin={() => setShowLoginPopup(true)}
                 onLogout={handleLogout} // Add logout functionality
               />
@@ -60,6 +75,8 @@ function App() {
               setShowLoginPopup(false);
               setShowRegisterPopup(true);
             }}
+            csrfToken={csrfToken}
+            fetchCsrfToken={fetchCsrfToken}
             onLoginSuccess={handleLogin}
           />
         )}
