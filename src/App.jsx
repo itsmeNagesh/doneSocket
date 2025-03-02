@@ -6,13 +6,13 @@ import LoginPopup from "./components/LoginPopup";
 import RegisterPopup from "./components/RegisterPopup";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showRegisterPopup, setShowRegisterPopup] = useState(false);
 
   
   useEffect(() => {
-    const sessionId = Cookies.get("sessionId"); 
+    const sessionId = Cookies.get("sessionid"); 
     if (sessionId) {
       setIsLoggedIn(true); 
     }
@@ -20,7 +20,6 @@ function App() {
 
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
     setShowLoginPopup(false);
   };
 
@@ -28,8 +27,7 @@ function App() {
   const handleLogout = () => {
     console.log("Logging out...");
     setIsLoggedIn(false);
-    Cookies.remove("sessionId"); 
-    window.location.href = "https://apexiq.ai";
+    Cookies.remove("sessionid"); 
   };
 
 

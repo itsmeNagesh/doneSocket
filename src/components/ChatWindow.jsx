@@ -48,7 +48,7 @@ const sendFormDataToBackend = async (file) => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   try {
-      const csrfToken = Cookies.get("csrftoken") || ""; 
+      const csrfToken = Cookies.get("csrftoken"; 
       const formData = new FormData();
       formData.append("file", file);
       console.log("csrfToken",csrfToken)
@@ -60,7 +60,7 @@ const sendFormDataToBackend = async (file) => {
                   "X-CSRFToken": csrfToken, 
                   "Content-Type": "multipart/form-data",
               },
-              credentials: "include",
+              withCredentials: true,
           }
       );
 
@@ -135,14 +135,14 @@ const stopRecording = () => {
 
 
 const handleAudioWaveButtonClick = async () => {
-  // if (!isLoggedIn) {
-  //   onLogin();
-  //   return;
-  // }
-  // if (!uploadedFileName) {
-  //   alert("Please upload a file first.");
-  //   return;
-  // }
+  if (!isLoggedIn) {
+    onLogin();
+    return;
+  }
+  if (!uploadedFileName) {
+    alert("Please upload a file first.");
+    return;
+  }
   try {
     await startRecording();
     setShowAIPopup(true);
